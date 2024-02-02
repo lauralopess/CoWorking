@@ -15,10 +15,16 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.MatteBorder;
 import java.awt.Cursor;
 import javax.swing.border.SoftBevelBorder;
+
+import model.DAO;
+
 import javax.swing.border.BevelBorder;
 import javax.swing.border.LineBorder;
 import java.awt.ComponentOrientation;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.sql.Connection;
 import java.awt.event.ActionEvent;
 import javax.swing.ImageIcon;
 
@@ -30,6 +36,12 @@ public class Login extends JDialog {
 	private JLabel imgDatabase;
 	
 	public Login() {
+		addWindowListener(new WindowAdapter(){
+			public void windowActivated(WindowEvent e) {
+				statusConexaoBanco();
+			}
+		});
+		
 		setTitle("Login");
 		setBounds(new Rectangle(600, 250, 430, 301));
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
@@ -78,6 +90,39 @@ public class Login extends JDialog {
 		imgDatabase.setBounds(20, 196, 54, 55);
 		getContentPane().add(imgDatabase);
 	}
+	
+	
+	
+	
+	
+	
+	DAO dao = new DAO();
+
+	private void statusConexaoBanco() {
+		try {
+			Connection conexaoBanco = dao.conectar();
+			
+			if (conexaoBanco == null) {
+				imgDatabase.setIcon(new ImageIcon (Login.class.getResource("/img/databaseOff.png")));
+			}
+			
+			else {
+				imgDatabase.setIcon(new ImageIcon (Login.class.getResource("/img/databaseOn.png")));
+			}
+			conexaoBanco.close();
+		}
+		
+		catch (Exception e) {
+			System.out.println(e);
+		}
+	}
+	
+	
+	
+	
+	
+	
+	
 
 	
 	public static void main(String[] args) {
