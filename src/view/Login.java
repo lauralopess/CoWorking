@@ -11,29 +11,18 @@ import java.awt.EventQueue;
 import java.awt.Rectangle;
 import javax.swing.SwingConstants;
 import javax.swing.JButton;
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.MatteBorder;
 import java.awt.Cursor;
-import javax.swing.border.SoftBevelBorder;
-
 import model.DAO;
-
-import javax.swing.border.BevelBorder;
-import javax.swing.border.LineBorder;
-import java.awt.ComponentOrientation;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.awt.event.ActionEvent;
 import javax.swing.ImageIcon;
 
 public class Login extends JDialog {
-	private JTextField inputLogin;
-	private JPasswordField inputSenha;
-	private JLabel tituloLogin;
-	private JButton btnLogin;
-	private JLabel imgDatabase;
 	
 	public Login() {
 		addWindowListener(new WindowAdapter(){
@@ -71,15 +60,17 @@ public class Login extends JDialog {
 		inputSenha.setBounds(135, 150, 183, 20);
 		getContentPane().add(inputSenha);
 		
-		tituloLogin = new JLabel("Acessar conta");
+		JLabel tituloLogin = new JLabel("Acessar conta");
 		tituloLogin.setFont(new Font("Yu Gothic UI", Font.BOLD, 17));
 		tituloLogin.setHorizontalAlignment(SwingConstants.CENTER);
 		tituloLogin.setBounds(0, 27, 432, 29);
 		getContentPane().add(tituloLogin);
 		
-		btnLogin = new JButton("Entrar");
+		JButton btnLogin = new JButton("Entrar");
+		btnLogin.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		btnLogin.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				logar();
 			}
 		});
 		btnLogin.setBounds(162, 208, 89, 23);
@@ -93,10 +84,10 @@ public class Login extends JDialog {
 	
 	
 	
-	
-	
-	
 	DAO dao = new DAO();
+	private JLabel imgDatabase;
+	private JTextField inputLogin;
+	private JPasswordField inputSenha;
 
 	private void statusConexaoBanco() {
 		try {
@@ -118,12 +109,39 @@ public class Login extends JDialog {
 	}
 	
 	
-	
-	
-	
-	
-	
+	private void logar() {
+		String read = "select * from funcionario where login=?" + "and senha=md5(?)";
+		
+		try {
+			//Estabelecer a conexão
+			Connection conexaoBanco = dao.conectar();
+			
+			//Preparar a execução do script SQL
+			PreparedStatement executarSQL = conexaoBanco.prepareStatement(read);
+			
+			//Atribuir valores de login e senha
+			//Substituir as interrogações ? ? pelo conteúdo da caixa de texto (input)
+			executarSQL.setString(1, inputLogin.getText());
+			executarSQL.setString(2, inputSenha.getText());
+			
 
+			//Executar os comandos SQL e de acordo com o resultado liberar os recursos na tela
+			ResultSet resultadoExecucao = executarSQL.executeQuery();
+			
+			//Validação do funcionário (autenticação)
+			//resultadoExecucao.next() significa que o login e a senha existem, ou seja, correspondem
+			
+			if (resultadoExecucao.next()) {
+				System.out.println("Você logou!");
+			} 
+			
+		}
+		
+		catch (Exception e) {
+			System.out.println(e);
+		}
+	}
+	
 	
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
