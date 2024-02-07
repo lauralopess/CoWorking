@@ -109,6 +109,7 @@ public class Login extends JDialog {
 	}
 	
 	
+	
 	private void logar() {
 		String read = "select * from funcionario where login=?" + "and senha=md5(?)";
 		
@@ -132,8 +133,14 @@ public class Login extends JDialog {
 			//resultadoExecucao.next() significa que o login e a senha existem, ou seja, correspondem
 			
 			if (resultadoExecucao.next()) {
-				System.out.println("Você logou!");
-			} 
+				
+				Home home = new Home();	
+				home.setVisible(true);
+			}
+			
+			else {
+				System.out.println("Login e/ou senha inválidos.");
+			}
 			
 		}
 		
