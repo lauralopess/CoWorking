@@ -3,6 +3,7 @@ package view;
 import javax.swing.JDialog;
 import java.awt.Toolkit;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.JPasswordField;
 import java.awt.Font;
@@ -33,9 +34,7 @@ public class Login extends JDialog {
 		
 		setTitle("Login");
 		setBounds(new Rectangle(600, 250, 430, 301));
-		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setResizable(false);
-		setModal(true);
 		getContentPane().setBackground(new Color(255, 255, 255));
 		setBackground(new Color(255, 255, 255));
 		setIconImage(Toolkit.getDefaultToolkit().getImage(Login.class.getResource("/img/logo.png")));
@@ -100,6 +99,7 @@ public class Login extends JDialog {
 			else {
 				imgDatabase.setIcon(new ImageIcon (Login.class.getResource("/img/databaseOn.png")));
 			}
+			
 			conexaoBanco.close();
 		}
 		
@@ -112,6 +112,20 @@ public class Login extends JDialog {
 	
 	private void logar() {
 		String read = "select * from funcionario where login=?" + "and senha=md5(?)";
+		
+		//Validação do login do usuário
+		if (inputLogin.getText().isEmpty()) {
+			JOptionPane.showMessageDialog(null, "Login do usuário obrigatório!");
+			inputLogin.requestFocus();
+		}
+		
+		//Validação da senha  do usuári
+		else if (inputSenha.getPassword().length == 0) {
+			JOptionPane.showMessageDialog(null, "Senha do usuário obrigatória!");
+			inputSenha.requestFocus();
+		}
+		
+		else {
 		
 		try {
 			//Estabelecer a conexão
@@ -136,11 +150,23 @@ public class Login extends JDialog {
 				
 				Home home = new Home();	
 				home.setVisible(true);
+				
+				//Fechar a janela de Login assim que a janela Home abrir (automaticamente)
+				dispose();
 			}
 			
 			else {
-				System.out.println("Login e/ou senha inválidos.");
+				
+				//Criar um alerta (pop-up) que informe ao usuário que login e/ou senha estão inválidos
+				JOptionPane.showMessageDialog(null, "Login e/ou senha inválido(s)!");
+				inputLogin.setText(null);
+				inputSenha.setText(null);
+				inputLogin.requestFocus();
 			}
+			
+			
+			conexaoBanco.close();
+			
 			
 		}
 		
@@ -148,7 +174,7 @@ public class Login extends JDialog {
 			System.out.println(e);
 		}
 	}
-	
+}	
 	
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
