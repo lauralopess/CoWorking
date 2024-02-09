@@ -6,6 +6,10 @@ import javax.swing.JDialog;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.text.DateFormat;
+import java.util.Date;
 
 import javax.swing.JLabel;
 import javax.swing.ImageIcon;
@@ -13,11 +17,26 @@ import javax.swing.JButton;
 import java.awt.Cursor;
 import java.awt.Rectangle;
 import java.awt.Color;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
 public class Home extends JDialog {
 	
+	public JLabel txtUsuarioLogado;
+	public JPanel panelUsuario;
+	public JLabel txtData;
+	
 	//Construtor
 	public Home() {
+		addWindowListener (new WindowAdapter() {
+			public void windowActivated(WindowEvent e) {
+				Date dataSistema = new Date();
+				DateFormat formatadorData = DateFormat.getDateInstance(DateFormat.FULL);
+				txtData.setText(formatadorData.format(dataSistema));
+			}
+		});
+		
+		
 		getContentPane().setBackground(new Color(255, 255, 255));
 		setBounds(new Rectangle(600, 250, 462, 317));
 		setResizable(false);
@@ -57,6 +76,20 @@ public class Home extends JDialog {
 		btnReserve.setIcon(new ImageIcon(Home.class.getResource("/img/reserve.png")));
 		btnReserve.setBounds(306, 23, 104, 96);
 		getContentPane().add(btnReserve);
+		
+		panelUsuario = new JPanel();
+		panelUsuario.setBounds(0, 227, 444, 49);
+		getContentPane().add(panelUsuario);
+		panelUsuario.setLayout(null);
+		
+		txtUsuarioLogado = new JLabel("");
+		txtUsuarioLogado.setBounds(21, 11, 140, 27);
+		txtUsuarioLogado.setHorizontalAlignment(SwingConstants.CENTER);
+		panelUsuario.add(txtUsuarioLogado);
+		
+		txtData = new JLabel("");
+		txtData.setBounds(225, 11, 198, 27);
+		panelUsuario.add(txtData);
 		btnReserve.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Reservas reservas = new Reservas();
