@@ -1,6 +1,6 @@
 package view;
-
 import java.awt.EventQueue;
+import java.awt.Rectangle;
 
 import javax.swing.JDialog;
 import java.awt.Toolkit;
@@ -11,23 +11,23 @@ import java.awt.event.WindowEvent;
 import java.text.DateFormat;
 import java.util.Date;
 
-import javax.swing.JLabel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import java.awt.Cursor;
-import java.awt.Rectangle;
-import java.awt.Color;
 import javax.swing.JPanel;
-import javax.swing.SwingConstants;
+import javax.swing.JLabel;
+import java.awt.Color;
 
 public class Home extends JDialog {
 	
-	public JLabel txtUsuarioLogado;
 	public JPanel panelUsuario;
+	public JLabel txtUsuarioLogado;
 	public JLabel txtData;
+	public JLabel txtPerfilLogado;
 	
 	//Construtor
 	public Home() {
+		getContentPane().setBackground(new Color(255, 255, 255));
 		addWindowListener (new WindowAdapter() {
 			public void windowActivated(WindowEvent e) {
 				Date dataSistema = new Date();
@@ -35,21 +35,20 @@ public class Home extends JDialog {
 				txtData.setText(formatadorData.format(dataSistema));
 			}
 		});
-		
-		
-		getContentPane().setBackground(new Color(255, 255, 255));
-		setBounds(new Rectangle(600, 250, 462, 317));
-		setResizable(false);
+
 		setTitle("Home");
+		setResizable(false);
 		setIconImage(Toolkit.getDefaultToolkit().getImage(Home.class.getResource("/img/logo.png")));
+		setBounds(new Rectangle(300, 100, 506, 356));
 		getContentPane().setLayout(null);
 		
 		JButton btnUser = new JButton("");
 		btnUser.setBorderPainted(false);
 		btnUser.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		btnUser.setIcon(new ImageIcon(Home.class.getResource("/img/user.png")));
-		btnUser.setBounds(36, 23, 104, 96);
+		btnUser.setBounds(46, 26, 107, 99);
 		getContentPane().add(btnUser);
+		
 		btnUser.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Funcionarios funcionarios = new Funcionarios();
@@ -61,8 +60,9 @@ public class Home extends JDialog {
 		btnRoom.setBorderPainted(false);
 		btnRoom.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		btnRoom.setIcon(new ImageIcon(Home.class.getResource("/img/room.png")));
-		btnRoom.setBounds(174, 23, 104, 96);
+		btnRoom.setBounds(183, 26, 107, 99);
 		getContentPane().add(btnRoom);
+		
 		btnRoom.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Salas salas = new Salas();
@@ -74,31 +74,36 @@ public class Home extends JDialog {
 		btnReserve.setBorderPainted(false);
 		btnReserve.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		btnReserve.setIcon(new ImageIcon(Home.class.getResource("/img/reserve.png")));
-		btnReserve.setBounds(306, 23, 104, 96);
+		btnReserve.setBounds(340, 26, 107, 99);
 		getContentPane().add(btnReserve);
 		
 		panelUsuario = new JPanel();
-		panelUsuario.setBounds(0, 227, 444, 49);
+		panelUsuario.setBackground(new Color(255, 255, 255));
+		panelUsuario.setBounds(0, 254, 490, 62);
 		getContentPane().add(panelUsuario);
 		panelUsuario.setLayout(null);
 		
 		txtUsuarioLogado = new JLabel("");
-		txtUsuarioLogado.setBounds(21, 11, 140, 27);
-		txtUsuarioLogado.setHorizontalAlignment(SwingConstants.CENTER);
+		txtUsuarioLogado.setBounds(10, 0, 157, 21);
 		panelUsuario.add(txtUsuarioLogado);
 		
 		txtData = new JLabel("");
-		txtData.setBounds(225, 11, 198, 27);
+		txtData.setBounds(245, 28, 235, 21);
 		panelUsuario.add(txtData);
+		
+		txtPerfilLogado = new JLabel("");
+		txtPerfilLogado.setBounds(10, 28, 157, 21);
+		panelUsuario.add(txtPerfilLogado);
+		
 		btnReserve.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Reservas reservas = new Reservas();
-				reservas.setVisible(true);
+				reservas.setVisible(true);		
 			}
 		});
 	}
 	
-	
+	//Implementação
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -106,11 +111,10 @@ public class Home extends JDialog {
 					Home dialog = new Home();
 					dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 					dialog.setVisible(true);
-				}
-				catch (Exception e) {
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
-			}	
+			}
 		});	
 	}
 }

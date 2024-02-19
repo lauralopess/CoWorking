@@ -1,23 +1,22 @@
 package view;
 
-import java.awt.EventQueue;
-
 import javax.swing.JDialog;
-import java.awt.Toolkit;
-import java.awt.Color;
+
+import java.awt.EventQueue;
 import java.awt.Rectangle;
+import java.awt.Toolkit;
 
 public class Reservas extends JDialog {
-	
+
 	public Reservas() {
-		setBounds(new Rectangle(600, 250, 462, 317));
-		getContentPane().setBackground(new Color(255, 255, 255));
 		setTitle("Reservas");
 		setResizable(false);
-		setIconImage(Toolkit.getDefaultToolkit().getImage(Reservas.class.getResource("/img/logo.png")));
-		
-	}
+		setBounds(new Rectangle(300, 100, 613, 362));
+		setIconImage(Toolkit.getDefaultToolkit().getImage(Login.class.getResource("/img/logo.png")));
+		getContentPane().setLayout(null);
 
+	}
+	
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -25,11 +24,10 @@ public class Reservas extends JDialog {
 					Reservas dialog = new Reservas();
 					dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 					dialog.setVisible(true);
-				}
-				catch (Exception e) {
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
-			}	
-		});	
+			}
+		});
 	}
 }
