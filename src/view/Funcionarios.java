@@ -7,8 +7,11 @@ import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLIntegrityConstraintViolationException;
 
 import javax.swing.JLabel;
@@ -16,6 +19,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
 import model.DAO;
+import net.proteanit.sql.DbUtils;
 
 import javax.swing.JPasswordField;
 import javax.swing.ImageIcon;
@@ -26,6 +30,8 @@ import javax.swing.JComboBox;
 import java.awt.Color;
 import java.awt.Font;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 
 public class Funcionarios extends JDialog {
 	private JTextField inputNome;
@@ -40,7 +46,7 @@ public class Funcionarios extends JDialog {
 		getContentPane().setBackground(new Color(255, 255, 255));
 		setTitle("Funcionários");
 		setResizable(false);
-		setBounds(new Rectangle(300, 100, 614, 403));
+		setBounds(new Rectangle(300, 100, 614, 448));
 		setIconImage(Toolkit.getDefaultToolkit().getImage(Login.class.getResource("/img/logo.png")));
 		getContentPane().setLayout(null);
 		
@@ -51,22 +57,22 @@ public class Funcionarios extends JDialog {
 		
 		JLabel loginFunc = new JLabel("Login:");
 		loginFunc.setFont(new Font("Yu Gothic UI", Font.PLAIN, 12));
-		loginFunc.setBounds(34, 127, 46, 20);
+		loginFunc.setBounds(34, 179, 46, 20);
 		getContentPane().add(loginFunc);
 		
 		JLabel senhaFunc = new JLabel("Senha:");
 		senhaFunc.setFont(new Font("Yu Gothic UI", Font.PLAIN, 12));
-		senhaFunc.setBounds(323, 130, 46, 14);
+		senhaFunc.setBounds(323, 182, 46, 14);
 		getContentPane().add(senhaFunc);
 		
 		JLabel emailFunc = new JLabel("E-mail:");
 		emailFunc.setFont(new Font("Yu Gothic UI", Font.PLAIN, 12));
-		emailFunc.setBounds(323, 200, 46, 17);
+		emailFunc.setBounds(323, 252, 46, 17);
 		getContentPane().add(emailFunc);
 		
 		JLabel perfilFunc = new JLabel("Perfil:");
 		perfilFunc.setFont(new Font("Yu Gothic UI", Font.PLAIN, 12));
-		perfilFunc.setBounds(34, 200, 46, 17);
+		perfilFunc.setBounds(34, 252, 46, 17);
 		getContentPane().add(perfilFunc);
 		
 		inputNome = new JTextField();
@@ -74,24 +80,30 @@ public class Funcionarios extends JDialog {
 		getContentPane().add(inputNome);
 		inputNome.setColumns(10);
 		
+		inputNome.addKeyListener(new KeyAdapter() {
+			public void keyReleased(KeyEvent e) {
+				buscarFuncionarioNaTabela();
+			}
+		});
+		
 		inputEmail = new JTextField();
 		inputEmail.setColumns(10);
-		inputEmail.setBounds(366, 199, 200, 20);
+		inputEmail.setBounds(366, 251, 200, 20);
 		getContentPane().add(inputEmail);
 		
 		inputLogin = new JTextField();
 		inputLogin.setColumns(10);
-		inputLogin.setBounds(74, 128, 200, 20);
+		inputLogin.setBounds(74, 180, 200, 20);
 		getContentPane().add(inputLogin);
 		
 		inputSenha = new JPasswordField();
-		inputSenha.setBounds(366, 128, 200, 20);
+		inputSenha.setBounds(366, 180, 200, 20);
 		getContentPane().add(inputSenha);
 		
 		imgCreate = new JButton("");
 		imgCreate.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		imgCreate.setIcon(new ImageIcon(Funcionarios.class.getResource("/img/create.png")));
-		imgCreate.setBounds(304, 290, 65, 54);
+		imgCreate.setBounds(317, 334, 65, 54);
 		getContentPane().add(imgCreate);
 		
 		imgCreate.addActionListener(new ActionListener() {
@@ -104,26 +116,35 @@ public class Funcionarios extends JDialog {
 		imgUpdate = new JButton("");
 		imgUpdate.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		imgUpdate.setIcon(new ImageIcon(Funcionarios.class.getResource("/img/update.png")));
-		imgUpdate.setBounds(398, 290, 65, 54);
+		imgUpdate.setBounds(411, 334, 65, 54);
 		getContentPane().add(imgUpdate);
 		
 		imgDelete = new JButton("");
 		imgDelete.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		imgDelete.setIcon(new ImageIcon(Funcionarios.class.getResource("/img/delete.png")));
-		imgDelete.setBounds(488, 290, 65, 54);
+		imgDelete.setBounds(501, 334, 65, 54);
 		getContentPane().add(imgDelete);
 		
 		inputPerfil = new JComboBox();
 		inputPerfil.setFont(new Font("Yu Gothic UI Semibold", Font.PLAIN, 11));
 		inputPerfil.setModel(new DefaultComboBoxModel(new String[] {"", "Administrador", "Gerência", "Atendimento", "Suporte"}));
-		inputPerfil.setBounds(74, 199, 200, 20);
+		inputPerfil.setBounds(74, 251, 200, 20);
 		getContentPane().add(inputPerfil);
+		
+		scrollPane = new JScrollPane();
+		scrollPane.setBounds(74, 77, 492, 64);
+		getContentPane().add(scrollPane);
+		
+		tblFuncionarios = new JTable();
+		scrollPane.setViewportView(tblFuncionarios);
 
 	}
 	
 	//Criar um objeto da classe DAO para estabelecer conexão com banco
 	DAO dao = new DAO();
 	private JComboBox inputPerfil;
+	private JScrollPane scrollPane;
+	private JTable tblFuncionarios;
 	
 	private void adicionarFuncionario() {
 		String create = "insert into funcionario (nomeFunc, login, senha, perfil, email) values (?, ?, md5(?), ?, ?);";
@@ -146,6 +167,9 @@ public class Funcionarios extends JDialog {
 			//Executar os comandos SQL e inserir o funcionário no banco de dados
 			executarSQL.executeUpdate();
 			
+			JOptionPane.showMessageDialog(null, "Usuário cadastrado com sucesso.");
+			
+			limparCampos();
 			
 			conexaoBanco.close();
 		}
@@ -156,9 +180,51 @@ public class Funcionarios extends JDialog {
 		
 		catch (Exception e) {
 			System.out.print(e);
+	
 		}
 		
 	}
+	
+	
+	
+	private void buscarFuncionarioNaTabela() {
+		String readTabela = "select idFuncionario as ID, nomeFunc as Nome, email as Email from funcionario where nomeFunc like ?;";
+		
+		try {
+			//Estabelecer a conexão
+			Connection conexaoBanco = dao.conectar();
+			
+			//Preparar a execução dos comandos
+			PreparedStatement executarSQL = conexaoBanco.prepareStatement(readTabela);
+			
+			//Substituir o ? pelo conteúdo da caixa de texto
+			executarSQL.setString(1, inputNome.getText() + "%");
+			
+			//Executar o comando SQL
+			ResultSet resultadoExecucao = executarSQL.executeQuery();
+			
+			//Exibir o resultado na tabela, utilização da biblioteca rs2xml para "popular" a tabela
+			tblFuncionarios.setModel(DbUtils.resultSetToTableModel(resultadoExecucao));
+			
+			conexaoBanco.close();
+		}
+		
+		catch (Exception e) {
+			System.out.println(e);
+		}
+			
+			
+	}
+	
+		private void limparCampos() {
+			inputNome.setText(null);
+			inputLogin.setText(null);
+			inputSenha.setText(null);
+			inputPerfil.setSelectedItem("");
+			inputEmail.setText(null);
+			inputNome.requestFocus();
+			//inputPerfil.setSelectedIndex(-1); 
+		}
 	
 	
 	
