@@ -399,6 +399,7 @@ public class Funcionarios extends JDialog {
 			// Executar o comando SQL e exibir o resultadono formulário funcionario (todos
 			// os seus dados)
 			ResultSet resultadoExecucao = executarSQL.executeQuery();
+	
 
 			if (resultadoExecucao.next()) {
 				inputLogin.setText(resultadoExecucao.getString(3));
